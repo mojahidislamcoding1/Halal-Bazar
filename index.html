@@ -1,0 +1,235 @@
+ <!--
+  Halal Bazar - Single-file responsive website
+  Usage:
+    1. Save this file as `index.html`.
+    2. Replace placeholder images (unsplash) with your product images or local paths.
+    3. Set SHOP_OWNER_PHONE to your WhatsApp number in international format ( +8801727415277),Others phone number (+8801797535132)
+    4. To deploy: push to GitHub and enable GitHub Pages OR upload to Netlify/Vercel.
+
+  What this includes:
+    - Home hero section
+    - Product gallery (honey, honey nuts/মধুময় বাদাম, mustard oil, stationery etc.)
+    - Product detail modal with 'Order' button
+    - Order form which opens WhatsApp or sends user to the provided Facebook page for ordering
+    - Contact/footer with Facebook link
+
+  NOTE: Customize product items in the `products` array in the script section.
+-->
+
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Halal Bazar — Halal goods & more</title>
+  <meta name="description" content="Halal Bazar: মধু, honey nut, ঘানী ভাঙ্গা খাটি সরিষা তেল, এবং স্টেশনারি পণ্য — অর্ডারের জন্য দেখুন।">
+  <style>
+    :root{--accent:#0f766e;--muted:#64748b;--bg:#f8fafc}
+    *{box-sizing:border-box}
+    body{font-family:Inter, system-ui, Arial, sans-serif;margin:0;background:var(--bg);color:#0f172a}
+    header{background:linear-gradient(90deg,var(--accent),#0ea5a6);color:white;padding:28px 16px}
+    .container{max-width:1100px;margin:0 auto;padding:24px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .brand h1{margin:0;font-size:20px}
+    .hero{display:flex;gap:24px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    .hero-left{flex:1 1 320px}
+    .hero-right{flex:1 1 300px;text-align:center}
+    .cta{background:white;color:var(--accent);padding:10px 14px;border-radius:10px;display:inline-block;margin-top:12px;text-decoration:none;font-weight:600}
+    .products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;margin-top:18px}
+    .card{background:white;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.08);overflow:hidden}
+    .card img{width:100%;height:160px;object-fit:cover;display:block}
+    .card-body{padding:12px}
+    .card-title{font-weight:700;margin:0 0 6px}
+    .card-sub{color:var(--muted);font-size:14px;margin:0 0 10px}
+    .btn{background:var(--accent);color:white;padding:8px 12px;border-radius:8px;text-decoration:none;display:inline-block}
+    footer{padding:18px 0;color:var(--muted);text-align:center}
+
+    /* modal */
+    .modal{position:fixed;inset:0;background:rgba(2,6,23,0.5);display:flex;align-items:center;justify-content:center;padding:16px;visibility:hidden;opacity:0;transition:opacity .18s}
+    .modal.open{visibility:visible;opacity:1}
+    .modal-card{background:white;border-radius:12px;max-width:760px;width:100%;overflow:auto;max-height:90vh}
+    .modal-body{display:flex;gap:12px;padding:12px}
+    .modal-body img{width:300px;height:300px;object-fit:cover;border-radius:8px}
+    .modal-info{flex:1}
+    label{display:block;font-size:13px;margin:8px 0 6px}
+    input,textarea,select{width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef2}
+    .order-actions{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+
+    @media (max-width:720px){.modal-body{flex-direction:column}.modal-body img{width:100%;height:220px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="brand">
+        <img src=https://scontent.fdac134-1.fna.fbcdn.net/v/t39.30808-6/522499651_2781685358708218_1344449321348325075_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeFafdqx7Vu1GLHB1z72USWhTZb0T-qNbZZNlvRP6o1tlrJKaAHG9hWwd4n_3tTTekJ9SIF2I7ZhRw8o3DYPkuV9&_nc_ohc=KCo2c5iXMtYQ7kNvwEkoLha&_nc_oc=Adnh-xyVCOeXV5QuT8UCSUBPNqFiRmw7iTQhrT6I8aF044xZzECOdSYJ-OeRcYNhmFs&_nc_zt=23&_nc_ht=scontent.fdac134-1.fna&_nc_gid=k8RPIQO0s3VwXVdt_WTOog&oh=00_AfX39sDChdf6HlDgP3tnIwT4Bl_mOohfWavZP319TgPmMg&oe=689D5B98 alt="logo" style="width:56px;height:56px;border-radius:10px;object-fit:cover">
+        <div>
+          <h1>Halal Bazar</h1>
+          <div style="font-size:13px;color:rgba(255,255,255,0.9)">মধু, Honey Nut, সরিষা তেল ও স্টেশনারি</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-left">
+        <h2 style="margin:0 0 8px">নির্বাচিত গুণগত পণ্য — সরাসরি আপনার কাছে</h2>
+        <p style="margin:0;color:var(--muted)">Halal Bazar-এ আমরা বিক্রি করি খাঁটি মধু, Honey Nut, ঘানী ভাঙ্গা খাটি সরিষার তেল এবং বিভিন্ন স্টেশনারি পণ্য। নিচে পণ্যগুলো দেখুন — অর্ডার করতে পণ্যের <strong>Order</strong> বাটনে ক্লিক করুন।</p>
+        <a class="cta" href="#products">পণ্য দেখুন</a>
+      </div>
+      <div class="hero-right">
+        <img src=https://scontent.fdac134-1.fna.fbcdn.net/v/t39.30808-6/521966106_2781686768708077_8720441245634205247_n.jpg?stp=dst-jpg_s960x960_tt6&_nc_cat=110&ccb=1-7&_nc_sid=cc71e4&_nc_eui2=AeHz1PZQG7t2VWb6VSjos8L5L6k42lNcH6EvqTjaU1wfoQL3zKxDzlwkj7j0GhBIC98fB8BwBC74_KSta4vt6pAj&_nc_ohc=gvdihDug7ZYQ7kNvwG9Zrlk&_nc_oc=Adk-FUDyJGjdcAIuMno2T5dwdED3TQeRdwQvnAwCIyjsrWvQg-qjg62uwvHwKPlcG2E&_nc_zt=23&_nc_ht=scontent.fdac134-1.fna&_nc_gid=fzzd-j8ELzU6wH9PN9c6Hw&oh=00_AfXQByWU_P_Gl6z3HUa7weqI8iyowZ76tixXrs2aGaSJ9Q&oe=689D4D23 alt="hero" style="width:320px;max-width:100%;border-radius:12px;object-fit:cover">
+      </div>
+    </section>
+     <hr>
+    <section id="products">
+      <h3 style="margin-top:28px">পণ্য সমূহ</h3>
+      <div class="products-grid" id="productsGrid">
+        <!-- product cards inserted by JS -->
+      </div>
+    </section>
+    <hr>
+    <section style="margin-top:28px">
+      <h3>অর্ডার বা যোগাযোগ</h3>
+      <p style="color:var(--muted)">অথবা সরাসরি Facebook পেজে যান:</p>
+      <p><a class="btn" href="https://www.facebook.com/muhammadshah.ali.3?mibextid=ZbWKwL" target="_blank" rel="noopener">Halal Bazar Facebook পেজ</a></p>
+      Our Whatsapp Number : +8801797535132 /+8801727415277
+    </section>
+    <hr>
+  </main>
+
+  <!-- modal -->
+  <div id="productModal" class="modal" role="dialog" aria-hidden="true">
+    <div class="modal-card">
+      <div style="display:flex;justify-content:flex-end;padding:8px">
+        <button id="closeModal" style="background:transparent;border:none;font-size:20px;padding:6px 10px;cursor:pointer">✕</button>
+      </div>
+      <div class="modal-body">
+        <img id="modalImg" src="" alt="product image">
+        <div class="modal-info">
+          <h3 id="modalTitle">Product</h3>
+          <p id="modalDesc" style="color:var(--muted)"></p>
+          <div style="margin-top:10px">
+            <strong>Price: </strong><span id="modalPrice"></span>
+          </div>
+
+          <div style="margin-top:12px">
+            <label for="custName">আপনার নাম</label>
+            <input id="custName" placeholder="আপনার নাম">
+            <label for="custPhone">ফোন নম্বর</label>
+            <input id="custPhone" placeholder="01XXXXXXXXX">
+            <label for="custAddr">ঠিকানা (ঐচ্ছিক)</label>
+            <textarea id="custAddr" rows="2" placeholder="তার মহানগর/বাড়ির ঠিকানা"></textarea>
+          </div>
+
+          <div class="order-actions">
+            <button id="whatsappOrder" class="btn">WhatsApp-এ অর্ডার পাঠাও</button>
+            <a id="facebookOrder" class="btn" style="background:#1877f2" target="_blank" rel="noopener">Facebook পেজে যান</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <small>© Halal Bazar — আপনি চাইলে <a href="https://www.facebook.com/muhammadshah.ali.3?mibextid=ZbWKwL" target="_blank" rel="noopener">আমাদের Facebook পেজ</a> থেকে অর্ডার দিন। অথবা আমাদের Whatsapp নাম্বার এ যোগাযোগ করুন (+8801727415277)/+(8801797535132)</small> 
+    </div>
+  </footer>
+
+  <script>
+    // ========== Customize these ===========
+    // IMPORTANT: replace with the shop owner's WhatsApp number in international format WITHOUT plus sign
+    const SHOP_OWNER_PHONE = '+8801727415277'; // e.g. '8801712345678' (Bangladesh: 88 + number)
+
+    // Products: change images and details as needed
+    const products = [
+      {id:1, title:'Pure Honey', desc:'100% খাঁটি মধু — 500g', price:'৳350', img:'https://lh7-us.googleusercontent.com/docsz/AD_4nXegGI3TiMP1VA7dg9NM9s74UiVjz03ykV6vriPjhueDEFDByeCykWVlt7jQl9_1oXKFwDTTRSONhfuiVYNX6EpBU1I2EaaDIoUuGC2b5NTa4fNYs7o1tTcQ-JDQQyqqAHDAQYmehDfiFW_q4PpjX5_UHQdB?key=sSd4HTTcsx8a0nLkjBPRVA'},
+      {id:2, title:'Honey Nuts (500g)', desc:'Crunchy honey nut — snack pack', price:'৳600', img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7QDPc7hXldO7sYnhr9ckHDCvjTp_thO24PQ&s'},
+      {id:3, title:'Mustard Oil (1L)', desc:'Cold-pressed মতির সরিষার তেল', price:'৳380', img:'https://cdn2.arogga.com/eyJidWNrZXQiOiJhcm9nZ2EiLCJrZXkiOiJtZWRpY2luZVwvNThcLzU4NjAxLU11c3RhcmQtT2lsLUdoYW5pLXZhbmdhLTUwMG1sLWg4amoucG5nIiwiZWRpdHMiOltdfQ=='},
+      {id:4, title:'Mustard oil (5L)', desc: 'Cold-pressed ',Price:'1200',img:'data:image/jpeg;base64,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'},
+      {id:5, title:'Notebook (A4)', desc:'80 পাতা — ভালো কভার', price:'৳60', img:'https://noteboibd.com/wp-content/uploads/2025/03/107-600x600.webp'},
+      {id:6, title:'Pen Pack', desc:'সংকলিত 5 টে কলম', price:'৳90', img:'https://images.unsplash.com/photo-1526045612212-70caf35c14df?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=placeholder'},
+      {id:7, title:'Assorted Stationery', desc:'পেন, পেন্সিল, ইরেজার সেট',Price:'150', img:'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=placeholder'}
+    ];
+
+    // ========== render products ==========
+    const grid = document.getElementById('productsGrid');
+    products.forEach(p=>{
+      const card = document.createElement('div');card.className='card';
+      card.innerHTML = `
+        <img src="${p.img}" alt="${p.title}">
+        <div class="card-body">
+          <h4 class="card-title">${p.title}</h4>
+          <p class="card-sub">${p.desc}</p>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong>${p.price}</strong>
+            <button class="btn" data-id="${p.id}">Order</button>
+          </div>
+        </div>`;
+      grid.appendChild(card);
+    });
+
+    // ========== modal behavior ==========
+    const modal = document.getElementById('productModal');
+    const closeBtn = document.getElementById('closeModal');
+    const modalImg = document.getElementById('modalImg');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalPrice = document.getElementById('modalPrice');
+    const whatsappBtn = document.getElementById('whatsappOrder');
+    const facebookBtn = document.getElementById('facebookOrder');
+
+    document.body.addEventListener('click', (e)=>{
+      const id = e.target.getAttribute('data-id');
+      if(id){
+        const p = products.find(x=>x.id==id);
+        if(!p) return;
+        modalImg.src = p.img; modalTitle.textContent = p.title; modalDesc.textContent = p.desc; modalPrice.textContent = p.price;
+        facebookBtn.href = 'https://www.facebook.com/muhammadshah.ali.3?mibextid=ZbWKwL';
+        openModal();
+      }
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (ev)=>{ if(ev.target===modal) closeModal(); });
+
+    function openModal(){ modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); }
+    function closeModal(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); }
+
+    // ========== Order via WhatsApp ==========
+    whatsappBtn.addEventListener('click', ()=>{
+      const name = document.getElementById('custName').value.trim();
+      const phone = document.getElementById('custPhone').value.trim();
+      const addr = document.getElementById('custAddr').value.trim();
+      const title = modalTitle.textContent;
+
+      if(!SHOP_OWNER_PHONE || SHOP_OWNER_PHONE.includes('X')){
+        alert('দয়া করে SHOP_OWNER_PHONE ভেরিয়েবলটি কনফিগার করুন index.html-এ এবং সঠিক WhatsApp নম্বর দিন।');
+        return;
+      }
+      if(!phone){ if(!confirm('আপনি ফোন নম্বর দেননি — তারপরও অর্ডার পাঠাতে চান?')) return; }
+
+      let msg = `নতুন অর্ডার%0Aপণ্য: ${encodeURIComponent(title)}%0A`; 
+      if(name) msg += `নাম: ${encodeURIComponent(name)}%0A`;
+      if(phone) msg += `ফোন: ${encodeURIComponent(phone)}%0A`;
+      if(addr) msg += `ঠিকানা: ${encodeURIComponent(addr)}%0A`;
+      msg += `
+পোস্ট: via Halal Bazar website`;
+
+      const waLink = `https://wa.me/${+8801797535132}?text=${msg}`;
+      window.open(waLink,'_blank');
+    });
+
+    // ========== initial small UX nicety: scroll to products if URL has #products ======
+    if(location.hash==='#products'){
+      document.getElementById('products').scrollIntoView({behavior:'smooth'});
+    }
+    
+  </script>
+                     <h2> Our Address : 206/2 Basail,Narsingdi.</h2>
+                       <h3>Our Shop : পেশোয়ারি মাদরাসা মার্কেট,বাসােইল নরসিংদী </h3>
+                          <h1> <big>Thanks for visit our Website</big></h1>
+</body>
+</html>
